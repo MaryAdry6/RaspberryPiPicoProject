@@ -21,7 +21,7 @@ Obiectivul principal este realizarea unui sistem digital de procesare a semnalul
 * *Microcontroler*: Raspberry Pi Pico 2 WH;
 * *Intrare/Ieșire Audio*: **DAC** MCP4725 (12-bit Resolution, I2C Interface), **ADC**-ul intern al plăcuței;
 * *Comenzi Fizice*: Toggle Switch pentru Power On/Off, Buton Ninigi PS10B2BK pentru Activare/Dezactivare efect;
-* *Indicatori (LED)*: **Alb** indică Power Status-ul, **Roșu** indică Distortion activ, **Albastru** indică Reverb activ, **Verde** indică Delay activ;
+* *Indicatori (LED)*: **Alb** indică Power Status-ul, **Roșu** indică Distortion activ, **Albastru** indică Reverb activ, **Galben** indică Delay activ;
 * *Conectivitate*: 2x **Jack 6.35mm (1/4")** pentru input-ul de la bass output-ul către amplificator, **portul Micro-USB** (5V) pentru alimentare, Wi-Fi integrat pentru comunicarea cu interfața web.
 
 
@@ -36,7 +36,7 @@ Obiectivul principal este realizarea unui sistem digital de procesare a semnalul
 2. Sistemul trebuie să preia semnalul prin mufa Jack Input și să îl redea prin Jack Output după procesare.
 3. Butonul fizic activează/dezactivează efectul selectat.
 4. Schimbarea algoritmului (Distors/Reverb/Delay) se face exclusiv prin Web UI.
-5. LED-urile colorate (roșu/albastru/verde) trebuie să reflecte efectul ales în interfața web.
+5. LED-urile colorate (roșu/albastru/galben) trebuie să reflecte efectul ales în interfața web.
 
 
 
