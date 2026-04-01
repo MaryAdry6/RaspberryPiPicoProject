@@ -3,6 +3,18 @@
 
 
 
+#### Membrii echipei:
+
+
+
+* Ciurilă Maria-Adriana
+* Frandeș Eugen-Codrin
+* Pănescu Andrei
+
+
+
+
+
 
 #### Obiectivele proiectului:
 
