@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang = "ro">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Acasă</title>
+
+        <link rel="icon" type="image/ico"
+            href="imagini/favicon.ico"/>
+        <link rel="stylesheet" type="text/css"
+            href="css/stil.css" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=New+Rocker&display=swap" rel="stylesheet">
+           
+    </head>
+
+    <body>
+        <header>
+            <h1 id="titlu">Pedală Bass<br>Titicaca</h1>
+
+            <nav id="nav-main">
+                <h2>
+                    <a href="index.html">Acasă</a>
+                    <a href="control.html">Control</a>
+
+                    <span class="dropdown">
+                        <span id="dropbtn">Informații⏷</span>
+                    
+                        <div class="dropdown-content">
+                            <a href="distors.html">Distorsion</a>
+                            <a href="reverb.html">Reverb</a>
+                            <a href="delay.html">Delay</a>
+                        </div>
+                    </span>
+                </h2>
+            </nav>
+            
+            <div class="linkuri">
+                <a href="https://github.tuiasi.ro/SM26/proiect_Titicaca" target="_blank"><img src="imagini/github.png"></a>
+                <a href="https://www.raspberrypi.com/products/raspberry-pi-pico-2/" target="_blank"><img src="imagini/raspberry.png"></a>
+            </div>
+        </header>
+        
+        <main>
+            <h3 class="titlu-info">Întârzierea în Muzică</h3>
+            <p class="paragraf-info">
+                Delay-ul (întârzierea) este o tehnică de procesare a semnalului audio care înregistrează un semnal de intrare pe un 
+                mediu de stocare și apoi îl redă după o anumită perioadă de timp. Atunci când redarea întârziată este mixată cu sunetul 
+                live, se creează un efect asemănător ecoului, prin care sunetul original este auzit, urmat de sunetul întârziat. Semnalul 
+                întârziat poate fi redat de mai multe ori sau reintrodus în procesul de înregistrare (feedback) pentru a crea sunetul unui 
+                ecou care se repetă și scade treptat în intensitate.
+            </p>
+            <p class="paragraf-info">
+                Efectele de delay variază de la un ecou subtil până la o amestecare pronunțată a sunetelor anterioare cu cele noi. Aceste 
+                efecte pot fi create folosind bucle de bandă magnetica (tape loops), o abordare dezvoltată în anii 1940 și 1950, utilizată 
+                de artiști precum Elvis Presley și Buddy Holly.
+            </p>    
+
+            <h3 class="titlu-info">Evoluția de la Ecoul Natural la Unitățile de Efect</h3>
+            <p class="paragraf-info">
+                Înainte de inventarea tehnologiei de delay audio, muzica ce folosea ecou trebuia înregistrată într-un spațiu cu reverberație 
+                naturală, ceea ce reprezenta adesea un inconvenient pentru muzicieni și ingineri. Cererea pentru un efect de ecou în timp 
+                real, ușor de utilizat, a dus la producția unor sisteme care ofereau o unitate de efecte "tot-în-unul", ce putea fi reglată 
+                pentru a produce ecouri la orice interval sau amplitudine. Prezența mai multor capete de redare (taps) a făcut posibilă 
+                obținerea unor delay-uri la intervale ritmice variate; acest lucru le-a oferit muzicienilor un mijloc suplimentar de 
+                exprimare față de ecourile periodice naturale.
+            </p>
+
+            <h3 class="titlu-info">Utilizarea Delay-ului în Muzica Modernă</h3>
+            <p class="paragraf-info">
+               În muzica populară și electronică, chitariștii electrici folosesc delay-ul pentru a produce texturi dens stratificate 
+               de note, cu ritmuri complementare liniei muzicale. The Edge, chitaristul trupei U2, utilizează delay-ul în timp ce 
+               cântă arpegii la chitara electrică, creând astfel un fundal susținut, similar cu sunetul unui sintetizator de tip „pad”.
+            </p>
+            <p class="paragraf-info">
+                Vocaliștii și instrumentiștii folosesc acest efect pentru a adăuga o calitate densă sau eterică interpretării lor. 
+                Delay-urile extrem de lungi, de 10 secunde sau mai mult, sunt adesea folosite pentru a crea bucle (loops) ale unei 
+                întregi fraze muzicale. Robert Fripp a utilizat două magnetofoane Revox pentru a obține timpi de delay foarte lungi 
+                în interpretările sale solo la chitară. El a numit această tehnologie „Frippertronics” și a folosit-o într-o serie 
+                de înregistrări celebre.
+            </p>
+
+            <audio controls>
+                <source src="audio/delay.ogg" type="audio/ogg">
+                Ne pare rău, browserul tău nu suportă redarea audio.
+            </audio>
+        </main>
+
+        <footer>
+        <hr>
+            <span>&nbsp;&copy;</span> <i>2026</i> Proiect SM - Pedală Bass <a href="https://maps.app.goo.gl/eY4kPAvq57ahpC6z6" target="_blank">Titicaca</a>
+        </footer>
+    </body>
+</html>
