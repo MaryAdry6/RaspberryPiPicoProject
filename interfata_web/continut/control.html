@@ -48,20 +48,50 @@
         <main id="main-control">
             <div class="efect">
                 <button id="distors2">Distorsion</button>
-                <input type="range" id="Distorsion" name="Distorsion" 
-                min="0" max="10" step="1">
+                <div class="knob-container knob-red">
+                    <div class="ticks tick-red"></div>
+                    <div class="knob">
+                        <div class="knob-dot dot-red"></div>
+                    </div>
+                    <div class="knob-labels">
+                        <span>MIN</span>
+                        <span class="knob-value">0</span>
+                        <span>MAX</span>
+                    </div>
+                    <input type="hidden" id="Distorsion" name="Distorsion" value="0">
+                </div>
             </div>
 
             <div class="efect">
                 <button id="reverb2">Reverb</button>
-                <input type="range" id="Reverb" name="Reverb" 
-                min="0" max="10" step="1">
+                <div class="knob-container knob-blue">
+                    <div class="ticks tick-blue"></div>
+                    <div class="knob">
+                        <div class="knob-dot dot-blue"></div>
+                    </div>
+                    <div class="knob-labels">
+                        <span>MIN</span>
+                        <span class="knob-value">0</span>
+                        <span>MAX</span>
+                    </div>
+                    <input type="hidden" id="Reverb" name="Reverb" value="0">
+                </div>
             </div>
             
             <div class="efect">
                 <button id="delay2">Delay</button>
-                <input type="range" id="Delay" name="Delay" 
-                min="0" max="10" step="1">
+                <div class="knob-container knob-yellow">
+                    <div class="ticks tick-yellow"></div>
+                    <div class="knob">
+                        <div class="knob-dot dot-yellow"></div>
+                    </div>
+                    <div class="knob-labels">
+                        <span>MIN</span>
+                        <span class="knob-value">0</span>
+                        <span>MAX</span>
+                    </div>
+                    <input type="hidden" id="Delay" name="Delay" value="0">
+                </div>
             </div>
         </main>
 
