@@ -80,11 +80,10 @@ int16_t rev_a2_buf[REV_A2];
 volatile uint32_t ptr_c1 = 0, ptr_c2 = 0, ptr_c3 = 0, ptr_c4 = 0;
 volatile uint32_t ptr_a1 = 0, ptr_a2 = 0;
 
+volatile int32_t reverb_mix = 50;
 
 // PROCESSING FUNCTION 
-
-
-static inline uint16_t process_sample(uint16_t sample_in) {
+static inline uint16_t __not_in_flash_func(process_sample)(uint16_t sample_in) {
     
     if (current_effect == FX_CLEAN) {
         return sample_in;
@@ -150,7 +149,7 @@ static inline uint16_t process_sample(uint16_t sample_in) {
         // High-Pass the input for the reverb tank
         // We separate the heavy low-end so only the mids/highs get reverberated.
         // This acts as a leaky integrator (low-pass), which we subtract from the original signal.
-        static int32_t lp_bass = 0;
+        static int32_t lp_bass = 0;         
         lp_bass = (lp_bass * 15 + ac_sample) >> 4; 
         int32_t rev_input = ac_sample - lp_bass; // The "shimmer" without the low-end mud
         
@@ -195,17 +194,21 @@ static inline uint16_t process_sample(uint16_t sample_in) {
         rev_a2_buf[ptr_a2] = new_a2;
         int32_t out_a2 = read_a2 - (new_a2 >> 1);
         ptr_a2 = (ptr_a2 + 1) % REV_A2;
+
+
+        // Identify the pure "Wet" signal (fully reverberated environment, centered at 0 DC)
+        int32_t wet_signal = out_a2; 
         
-        // Final Mix
-        int32_t mixed = ac_sample + (out_a2 >> 1);
+        // Blend Dry (ac_sample) and Wet (wet_signal) dynamically based on the web knob (0-100)
+        int32_t mixed = ((ac_sample * (100 - reverb_mix)) + (wet_signal * reverb_mix)) / 100;
         
         // Restore the hardware DC bias so the PWM reads it correctly
         mixed += 2048; 
         
         // Hardware Bounds Safety Net
         if (mixed > 4095) mixed = 4095;
-        if (mixed < 0) mixed = 0;
-        
+        if (mixed < 0)    mixed = 0;
+
         return (uint16_t)mixed;
     }
     
@@ -215,7 +218,7 @@ static inline uint16_t process_sample(uint16_t sample_in) {
 // INTERRUPTS & PERIPHERALS
 
 
-void dma_irq_handler() {
+void __not_in_flash_func(dma_irq_handler)() {
     if (dma_channel_get_irq0_status(adc_dma_chan)) {
         dma_channel_acknowledge_irq0(adc_dma_chan);
 
@@ -237,7 +240,7 @@ void dma_irq_handler() {
     }
 }
 
-bool timer_callback(struct repeating_timer *t) {
+bool __not_in_flash_func(timer_callback)(struct repeating_timer *t) {
     uint16_t *buf = (play_buffer == 0) ? out_buffer_0 : out_buffer_1;
 
     uint32_t pwm_val = (buf[play_index] * 2500) / 4095; 
@@ -346,17 +349,27 @@ static err_t http_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_
             int val = 0;
             // extract the knob name and value
             if (sscanf(request, "GET /?param=%31[^&]&val=%d", param_name, &val) == 2) {
-                
-                // TODO: web values to your C variables here
                 if (strcmp(param_name, "Distorsion") == 0) {
-                    // ex: map 0-100 to your DSP gain threshold
-                    // dist_gain = val; 
+                    if (val == 0) val = 1;
+
+                    // default dist_gain is 25
+                    dist_gain = (val * 50) / 100 + 1; // 0-100 = clean-to-insane gain range of 1 to 50.
+                    dist_clip = 2000 - ((val * 1400) / 100); // 0-100 => 100 = clipping at 600, 0 = 2000
+                    
+                    printf("[WEB] Distortion updated: Gain=%d, Clip=%d\n", dist_gain, dist_clip);
                 } 
                 else if (strcmp(param_name, "Delay") == 0) {
-                    // delay_time = val;
+                    // if (val == 0) {
+                    //     delay_depth = 0;
+                    // } else {
+                    //     delay_depth = 1000 + ((val * (DELAY_MAX - 1500)) / 100); // 1-100 = 1000 - 24500 sample delay window
+                    // }
+                    // printf("[WEB] Delay Time updated: Depth=%d samples\n", delay_depth);
                 }
                 else if (strcmp(param_name, "Reverb") == 0) {
-                    // reverb_mix = val;
+                    // reverb_mix = val; 
+                    
+                    // printf("[WEB] Reverb Mix updated: %d%%\n", reverb_mix);
                 }
                 printf("Knob Update -> %s: %d\n", param_name, val);
             }
@@ -488,20 +501,16 @@ void core1_audio_loop() {
 
 int main() {
     stdio_init_all();
-
-    gpio_init(23);
-    gpio_set_dir(23, GPIO_OUT);
-    gpio_put(23, 1);
     
     sleep_ms(2000);
     printf("Bass Pedal Starting...\n");
-
-
 
     // --- NEW WI-FI INITIALIZATION ---
     if (cyw43_arch_init()) {
         printf("Wi-Fi Init Failed!\n");
     } else {
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_SMPS_PIN, 1);
+
         // Start Access Point Mode! 
         const char *ap_name = "PicoBassPedal";
         const char *password = "bass1234"; // 
