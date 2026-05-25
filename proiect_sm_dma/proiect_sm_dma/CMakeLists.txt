@@ -62,7 +62,6 @@ target_link_libraries(proiect_sm_dma
         hardware_pwm
         hardware_timer
         hardware_clocks
-        pico_cyw43_arch_none
         )
 
 pico_add_extra_outputs(proiect_sm_dma)
