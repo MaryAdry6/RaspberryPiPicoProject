@@ -10,6 +10,8 @@
 #include "pico/cyw43_arch.h"
 #include "lwip/tcp.h"
 
+#include "generated_assets.h"
+
 #define ADC_PIN         26
 #define PWM_PIN         22
 #define BUFFER_SIZE     256
@@ -75,23 +77,6 @@ int16_t rev_a2_buf[REV_A2];
 
 volatile uint32_t ptr_c1 = 0, ptr_c2 = 0, ptr_c3 = 0, ptr_c4 = 0;
 volatile uint32_t ptr_a1 = 0, ptr_a2 = 0;
-
-
-const char* html_page = 
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/html\r\n"
-    "Connection: close\r\n\r\n"
-    "<!DOCTYPE html>"
-    "<html>"
-    "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>"
-    "<body style=\"text-align:center; font-family:sans-serif; background:#222; color:white;\">"
-    "<h1>Bass Pedal UI</h1>"
-    "<a href=\"/?fx=clean\"><button style=\"padding:20px; margin:10px; font-size:18px;\">Clean</button></a><br>"
-    "<a href=\"/?fx=dist\"><button style=\"padding:20px; margin:10px; font-size:18px;\">Distortion</button></a><br>"
-    "<a href=\"/?fx=delay\"><button style=\"padding:20px; margin:10px; font-size:18px;\">Delay</button></a><br>"
-    "<a href=\"/?fx=reverb\"><button style=\"padding:20px; margin:10px; font-size:18px;\">Reverb</button></a><br>"
-    "</body>"
-    "</html>";
 
 
 // PROCESSING FUNCTION 
@@ -338,14 +323,134 @@ static err_t http_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_
         memcpy(request, p->payload, len);
         request[len] = '\0';
         
-        // This links your web buttons directly to your untouched DSP variable
-        if (strstr(request, "GET /?fx=clean")) current_effect = FX_CLEAN;
-        if (strstr(request, "GET /?fx=dist"))  current_effect = FX_DISTORTION;
-        if (strstr(request, "GET /?fx=delay")) current_effect = FX_DELAY;
-        if (strstr(request, "GET /?fx=reverb")) current_effect = FX_REVERB;
+        char response_header[256];
+        const unsigned char* response_body = NULL;
+        unsigned int response_body_len = 0;
 
-        // Serve the HTML page
-        tcp_write(tpcb, html_page, strlen(html_page), TCP_WRITE_FLAG_COPY);
+        // EFFECT SWITCHING
+        if (strstr(request, "GET /?fx=")) {
+            if (strstr(request, "fx=clean"))  current_effect = FX_CLEAN;
+            if (strstr(request, "fx=dist"))   current_effect = FX_DISTORTION;
+            if (strstr(request, "fx=delay"))  current_effect = FX_DELAY;
+            if (strstr(request, "fx=reverb")) current_effect = FX_REVERB;
+            
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\n");
+            response_body = (const unsigned char*)"FX Switched";
+            response_body_len = 11;
+        }
+        // KNOBS
+        else if (strstr(request, "GET /?param=")) {
+            char param_name[32];
+            int val = 0;
+            // extract the knob name and value
+            if (sscanf(request, "GET /?param=%31[^&]&val=%d", param_name, &val) == 2) {
+                
+                // TODO: web values to your C variables here
+                if (strcmp(param_name, "Distorsion") == 0) {
+                    // ex: map 0-100 to your DSP gain threshold
+                    // dist_gain = val; 
+                } 
+                else if (strcmp(param_name, "Delay") == 0) {
+                    // delay_time = val;
+                }
+                else if (strcmp(param_name, "Reverb") == 0) {
+                    // reverb_mix = val;
+                }
+                printf("Knob Update -> %s: %d\n", param_name, val);
+            }
+            
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\n");
+            response_body = (const unsigned char*)"Param Saved";
+            response_body_len = 11;
+        }
+        // STATIC HTML
+        else if (strstr(request, "GET / ") || strstr(request, "GET /index.html")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n");
+            response_body = asset_index_html;
+            response_body_len = asset_index_html_len;
+        } 
+        else if (strstr(request, "GET /control.html")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n");
+            response_body = asset_control_html;
+            response_body_len = asset_control_html_len;
+        } 
+        else if (strstr(request, "GET /delay.html")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n");
+            response_body = asset_delay_html;
+            response_body_len = asset_delay_html_len;
+        } 
+        else if (strstr(request, "GET /distors.html")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n");
+            response_body = asset_distors_html;
+            response_body_len = asset_distors_html_len;
+        } 
+        else if (strstr(request, "GET /reverb.html")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n");
+            response_body = asset_reverb_html;
+            response_body_len = asset_reverb_html_len;
+        } 
+        // CSS + JS
+        else if (strstr(request, "GET /css/stil.css")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\nConnection: close\r\n\r\n");
+            response_body = asset_stil_css;
+            response_body_len = asset_stil_css_len;
+        } 
+        else if (strstr(request, "GET /js/script.js")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: application/javascript\r\nConnection: close\r\n\r\n");
+            response_body = asset_script_js;
+            response_body_len = asset_script_js_len;
+        } 
+        // AUDIO + IMAGES
+        else if (strstr(request, "GET /audio/delay.ogg")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: audio/ogg\r\nConnection: close\r\n\r\n");
+            response_body = asset_audio_delay;
+            response_body_len = asset_audio_delay_len;
+        }
+        else if (strstr(request, "GET /audio/distors.ogg")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: audio/ogg\r\nConnection: close\r\n\r\n");
+            response_body = asset_audio_distors;
+            response_body_len = asset_audio_distors_len;
+        }
+        else if (strstr(request, "GET /audio/reverb.ogg")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: audio/ogg\r\nConnection: close\r\n\r\n");
+            response_body = asset_audio_reverb;
+            response_body_len = asset_audio_reverb_len;
+        }
+        else if (strstr(request, "GET /imagini/github.png")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nConnection: close\r\n\r\n");
+            response_body = asset_img_github;
+            response_body_len = asset_img_github_len;
+        }
+        else if (strstr(request, "GET /imagini/raspberry.png")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nConnection: close\r\n\r\n");
+            response_body = asset_img_raspberry;
+            response_body_len = asset_img_raspberry_len;
+        }
+        else if (strstr(request, "GET /imagini/favicon.ico")) {
+            sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: image/x-icon\r\nConnection: close\r\n\r\n");
+            response_body = asset_img_favicon;
+            response_body_len = asset_img_favicon_len;
+        }
+        // SMTH ELSE => ERROR 404
+        else {
+            sprintf(response_header, "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\n");
+            response_body = (const unsigned char*)"File not found";
+            response_body_len = 14;
+        }
+
+        // WRITE PAYLOADS TO NETWORK
+        tcp_write(tpcb, response_header, strlen(response_header), TCP_WRITE_FLAG_COPY);
+        
+        // 2. Write Binary/Text Content Body
+        if (response_body && response_body_len > 0) {
+            size_t snd_buf = tcp_sndbuf(tpcb);
+            if (response_body_len <= snd_buf) {
+                tcp_write(tpcb, response_body, response_body_len, 0);
+            } else {
+                tcp_write(tpcb, response_body, snd_buf, 0); 
+                printf("Warning: Payload exceeded TCP buffer size!\n");
+            }
+        }
         
         tcp_recved(tpcb, p->tot_len);
         pbuf_free(p);
