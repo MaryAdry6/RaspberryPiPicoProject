@@ -10,6 +10,8 @@
 #include "pico/cyw43_arch.h"
 #include "lwip/tcp.h"
 
+#include "pico/multicore.h"
+
 #include "generated_assets.h"
 
 #define ADC_PIN         26
@@ -466,6 +468,24 @@ static err_t connection_callback(void *arg, struct tcp_pcb *newpcb, err_t err) {
 }
 
 
+void core1_audio_loop() {
+    //core 1
+    my_adc_init();
+    dma_init();
+    my_pwm_init();
+    timer_init();
+    
+    // Start ADC + DMA
+    adc_run(true);
+    dma_channel_start(adc_dma_chan);
+
+    // Keep Core 1 alive forever
+    while (true) {
+        tight_loop_contents();
+    }
+}
+
+
 int main() {
     stdio_init_all();
 
@@ -503,24 +523,13 @@ int main() {
     // --------------------------------
 
 
-    my_adc_init();
-    dma_init();
-    my_pwm_init();
-    timer_init();
-    
-    // Start ADC + DMA
-    adc_run(true);
-    dma_channel_start(adc_dma_chan);
-
+    multicore_launch_core1(core1_audio_loop);
     printf("Running at %d Hz sample rate\n", SAMPLE_RATE);
 
-    // main loop nu face nimic, totul e din intreruperi
-    while (true) {
-        tight_loop_contents();
 
+    while (true) {
         cyw43_arch_poll(); 
         sleep_ms(10);
-        
     }
 
     return 0;

@@ -102,6 +102,7 @@ target_link_libraries(proiect_sm
         hardware_clocks
         pico_cyw43_arch_lwip_poll
         pico_stdlib
+        pico_multicore
         )
 
 pico_add_extra_outputs(proiect_sm)
