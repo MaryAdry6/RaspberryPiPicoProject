@@ -52,6 +52,8 @@ Obiectivul principal este realizarea unui sistem digital de procesare a semnalul
 |3|Se selectează efectul „Distortion” din interfața Web UI.|LED-ul Alb se stinge instantaneu, LED-ul Roșu se aprinde, iar semnalul din amplificator capătă caracteristicile acustice de distors/saturație.|
 
 ## Diagramă de Componente / Schemă Bloc
+<img width="952" height="741" alt="schema_bloc_pedalabass" src="https://github.tuiasi.ro/user-attachments/assets/b86ac664-9c54-45e5-94db-0dc5b083856b" />
+
 ## Parametrii Relevanți ai Componentelor și Integrarea Lor
 
 Integrarea componentelor în arhitectura propusă se bazează pe potrivirea parametrilor electrici și dinamici dintre etajele analogice și cele digitale ale microcontrolerului RP2350.
