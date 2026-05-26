@@ -97,45 +97,49 @@ Integrarea componentelor software cu cele hardware se realizează în pași incr
 Odată ce plăcuța este conectată la curent, utilizatorul trebuie să se conecteze la adresa Wi-Fi a acesteia:
 #### Denumire: PicoBassPedal
 #### Parola: bass1234
-[wifi0]
+<img width="361" height="187" alt="wifi0" src="https://github.tuiasi.ro/user-attachments/assets/5149ae60-4a84-4f74-bc41-de372d178846" />
 La prima conectare, utilizatorul poate vedea rețeaua plăcuței în setările Wi-Fi ale dispozitivului, dar după conectare este întâmpinat de această eroare la accesarea interfeței web:
-[wifi1]
+<img width="1867" height="1035" alt="wifi1" src="https://github.tuiasi.ro/user-attachments/assets/c3facae4-06fa-4bcd-8062-bf1dbb0f602a" />
 Utilizatorul trebuie să intre în setările rețelei,
-[wifi2]
+<img width="1226" height="1026" alt="wifi2" src="https://github.tuiasi.ro/user-attachments/assets/79a55514-6c7f-4cf6-a2c7-abb3b9a0cfd3" />
 să modifice setarea *"IP Assignment"* din automatic în **Manual**
-[wifi3]
-[wifi4]
+<img width="1088" height="58" alt="wifi3" src="https://github.tuiasi.ro/user-attachments/assets/f5905939-6593-4f66-8bde-bc3676e21447" />
+
+<img width="582" height="255" alt="wifi4" src="https://github.tuiasi.ro/user-attachments/assets/df00b881-0a6a-4d7a-bc3f-01c21dbbf81a" />
 și să completeze adresele cerute astfel:
-[wifi5]
+<img width="579" height="862" alt="wifi5" src="https://github.tuiasi.ro/user-attachments/assets/7907d5e5-aff2-4a66-ac21-640cb96cbb8c" />
 #### NU UITAȚI SĂ APĂSAȚI BUTONUL DE SAVE!
 După, pentru accesarea interfeței web, trebuie introdusă în bara de căutari adresa:
 #### 192.168.4.1
-[wifi6]
+<img width="1867" height="1028" alt="wifi6" src="https://github.tuiasi.ro/user-attachments/assets/40953baa-3533-4eb7-83cf-f71666715a67" />
 
 ### Cablarea Chitarei Bass
 Pentru conectarea bass-ului, pașii sunt următorii:
 
  1. Conectarea unui cablu jack 6.35 mm între **bass** și **JackIn** al proiectului
-[conect1]
+![conect1](https://github.tuiasi.ro/user-attachments/assets/3edbeff6-c73c-49b2-a6ee-6a57750ce440)
+
  2. Conectarea unui cablu jack 6.35 mm între **JackOut** al proiectului și **amplificator**
-[conect2]
+![conect2](https://github.tuiasi.ro/user-attachments/assets/b35d2685-a348-44fb-a1ff-1032657b7add)
+
  3. Pornirea amplificatorului
-[conect3]
+![conect3](https://github.tuiasi.ro/user-attachments/assets/b6065834-056c-4504-9b50-5f8c40cee146)
+
  4. Alimentarea plăcuței Pico prin **MicroUSB**
  5. Ultimul pas, dar cel mai important, pornirea **switch-ului**
-[conect4]
+![conect4](https://github.tuiasi.ro/user-attachments/assets/bfec22a5-784b-4975-9290-2f0e2f8298fe)
 
 ### Folosirea interfeței
 Site-ul web nu conține doar panoul de control al pedalei, ci și informații despre fiecare efect implementat.
-[web1]
+<img width="530" height="283" alt="web1" src="https://github.tuiasi.ro/user-attachments/assets/d0571c3e-6040-4a9a-aea6-31f869768a4a" />
 La secțiunea *"Control"* sunt butoanele de activare a efectelor:
-
  - Butonul Alb pentru semnalul *"Curat/Clean"* fără vreun efect aplicat
-[web2]
+![web2](https://github.tuiasi.ro/user-attachments/assets/aaedcfcf-ade2-441e-bf37-24c6746ab4cf)
  - Butonul Roșu pentru Distorsiune cu potențiometru de intensitate al efectului
-[web3]
+![web3](https://github.tuiasi.ro/user-attachments/assets/7b1343bf-a8a3-445f-8345-f72ce4e39f3d)
  - Butonul Albastru pentru Tremolo cu potențiometru de intensitate al efectului
-[web4]
+![web4](https://github.tuiasi.ro/user-attachments/assets/89b86446-4c78-4fc8-a09e-a25ac5bd4055)
  - Butonul Galben pentru Întârziere
-[web5]
+![web5](https://github.tuiasi.ro/user-attachments/assets/99af39f1-12e5-49b1-82c8-90901502c480)
+
 
