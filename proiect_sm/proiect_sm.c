@@ -14,6 +14,11 @@
 
 #include "generated_assets.h"
 
+#define LED_WHITE       14
+#define LED_RED         15
+#define LED_BLUE        16
+#define LED_YELLOW      17
+
 #define ADC_PIN         26
 #define PWM_PIN         22
 #define BUFFER_SIZE     256
@@ -320,6 +325,29 @@ void timer_init()
     );
 }
 
+void update_leds() {
+    gpio_put(LED_WHITE,      current_effect == FX_CLEAN);
+    gpio_put(LED_RED, current_effect == FX_DISTORTION);
+    gpio_put(LED_YELLOW,      current_effect == FX_DELAY);
+    gpio_put(LED_BLUE,     current_effect == FX_REVERB);
+}
+
+void leds_init() {
+    gpio_init(LED_WHITE);
+    gpio_set_dir(LED_WHITE, GPIO_OUT);
+    
+    gpio_init(LED_RED);
+    gpio_set_dir(LED_RED, GPIO_OUT);
+    
+    gpio_init(LED_YELLOW);
+    gpio_set_dir(LED_YELLOW, GPIO_OUT);
+    
+    gpio_init(LED_BLUE);
+    gpio_set_dir(LED_BLUE, GPIO_OUT);
+    
+    update_leds(); 
+}
+
 
 static err_t http_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err) {
     if (p != NULL) {
@@ -338,6 +366,8 @@ static err_t http_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_
             if (strstr(request, "fx=dist"))   current_effect = FX_DISTORTION;
             if (strstr(request, "fx=delay"))  current_effect = FX_DELAY;
             if (strstr(request, "fx=reverb")) current_effect = FX_REVERB;
+
+            update_leds();
             
             sprintf(response_header, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\n");
             response_body = (const unsigned char*)"FX Switched";
@@ -501,6 +531,7 @@ void core1_audio_loop() {
 
 int main() {
     stdio_init_all();
+    leds_init();
     
     sleep_ms(2000);
     printf("Bass Pedal Starting...\n");
