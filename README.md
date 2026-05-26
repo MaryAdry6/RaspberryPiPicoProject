@@ -98,6 +98,7 @@ Odată ce plăcuța este conectată la curent, utilizatorul trebuie să se conec
 #### Denumire: PicoBassPedal
 #### Parola: bass1234
 <img width="361" height="187" alt="wifi0" src="https://github.tuiasi.ro/user-attachments/assets/5149ae60-4a84-4f74-bc41-de372d178846" />
+
 La prima conectare, utilizatorul poate vedea rețeaua plăcuței în setările Wi-Fi ale dispozitivului, dar după conectare este întâmpinat de această eroare la accesarea interfeței web:
 <img width="1867" height="1035" alt="wifi1" src="https://github.tuiasi.ro/user-attachments/assets/c3facae4-06fa-4bcd-8062-bf1dbb0f602a" />
 Utilizatorul trebuie să intre în setările rețelei,
@@ -106,10 +107,13 @@ să modifice setarea *"IP Assignment"* din automatic în **Manual**
 <img width="1088" height="58" alt="wifi3" src="https://github.tuiasi.ro/user-attachments/assets/f5905939-6593-4f66-8bde-bc3676e21447" />
 
 <img width="582" height="255" alt="wifi4" src="https://github.tuiasi.ro/user-attachments/assets/df00b881-0a6a-4d7a-bc3f-01c21dbbf81a" />
+
 și să completeze adresele cerute astfel:
 <img width="579" height="862" alt="wifi5" src="https://github.tuiasi.ro/user-attachments/assets/7907d5e5-aff2-4a66-ac21-640cb96cbb8c" />
+
 #### NU UITAȚI SĂ APĂSAȚI BUTONUL DE SAVE!
 După, pentru accesarea interfeței web, trebuie introdusă în bara de căutari adresa:
+
 #### 192.168.4.1
 <img width="1867" height="1028" alt="wifi6" src="https://github.tuiasi.ro/user-attachments/assets/40953baa-3533-4eb7-83cf-f71666715a67" />
 
@@ -132,6 +136,7 @@ Pentru conectarea bass-ului, pașii sunt următorii:
 ### Folosirea interfeței
 Site-ul web nu conține doar panoul de control al pedalei, ci și informații despre fiecare efect implementat.
 <img width="530" height="283" alt="web1" src="https://github.tuiasi.ro/user-attachments/assets/d0571c3e-6040-4a9a-aea6-31f869768a4a" />
+
 La secțiunea *"Control"* sunt butoanele de activare a efectelor:
  - Butonul Alb pentru semnalul *"Curat/Clean"* fără vreun efect aplicat
 ![web2](https://github.tuiasi.ro/user-attachments/assets/aaedcfcf-ade2-441e-bf37-24c6746ab4cf)
