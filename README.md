@@ -90,7 +90,9 @@ Integrarea componentelor software cu cele hardware se realizează în pași incr
  2. **Integrare și Testare Driver Periferice:** Încărcarea unui cod minimalist care citește eșantionul din ADC și îl scrie direct ca factor de umplere în registrul PWM, ocolind bufferele și rețeaua. Scopul este calibrarea filtrului acustic de la ieșire și verificarea absenței distorsiunilor hardware.
  3. **Integrare și Validare Conectivitate Wi-Fi + Server Web:** Pornirea modulului Wi-Fi pe Core 0. Se rulează un script de test care simulează schimbări rapide ale stării din interfață pentru a garanta că rutările software aprind LED-urile fizice corecte fără a afecta stabilitatea microcontrolerului.
 
-## Scheme Bloc Software
+## Schemă Bloc Software
+<img width="691" height="1561" alt="schema_bloc_software_v2" src="https://github.tuiasi.ro/user-attachments/assets/e853276a-ae2b-44c8-81c2-56cf2a01c106" />
+
 
 ## Documentare Foto și Instrucțiuni de Utilizare
 ### Proiectul Complet
