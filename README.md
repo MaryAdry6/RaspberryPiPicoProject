@@ -90,6 +90,52 @@ Integrarea componentelor software cu cele hardware se realizează în pași incr
 
 ## Scheme Bloc Software
 
-## Documentare Foto și Video
+## Documentare Foto și Instrucțiuni de Utilizare
+### Proiectul Complet
 ![foto1](https://github.tuiasi.ro/user-attachments/assets/92049fac-a6dd-4732-88c5-68823867a30a)
+### Prima conectare
+Odată ce plăcuța este conectată la curent, utilizatorul trebuie să se conecteze la adresa Wi-Fi a acesteia:
+#### Denumire: PicoBassPedal
+#### Parola: bass1234
+[wifi0]
+La prima conectare, utilizatorul poate vedea rețeaua plăcuței în setările Wi-Fi ale dispozitivului, dar după conectare este întâmpinat de această eroare la accesarea interfeței web:
+[wifi1]
+Utilizatorul trebuie să intre în setările rețelei,
+[wifi2]
+să modifice setarea *"IP Assignment"* din automatic în **Manual**
+[wifi3]
+[wifi4]
+și să completeze adresele cerute astfel:
+[wifi5]
+#### NU UITAȚI SĂ APĂSAȚI BUTONUL DE SAVE!
+După, pentru accesarea interfeței web, trebuie introdusă în bara de căutari adresa:
+#### 192.168.4.1
+[wifi6]
+
+### Cablarea Chitarei Bass
+Pentru conectarea bass-ului, pașii sunt următorii:
+
+ 1. Conectarea unui cablu jack 6.35 mm între **bass** și **JackIn** al proiectului
+[conect1]
+ 2. Conectarea unui cablu jack 6.35 mm între **JackOut** al proiectului și **amplificator**
+[conect2]
+ 3. Pornirea amplificatorului
+[conect3]
+ 4. Alimentarea plăcuței Pico prin **MicroUSB**
+ 5. Ultimul pas, dar cel mai important, pornirea **switch-ului**
+[conect4]
+
+### Folosirea interfeței
+Site-ul web nu conține doar panoul de control al pedalei, ci și informații despre fiecare efect implementat.
+[web1]
+La secțiunea *"Control"* sunt butoanele de activare a efectelor:
+
+ - Butonul Alb pentru semnalul *"Curat/Clean"* fără vreun efect aplicat
+[web2]
+ - Butonul Roșu pentru Distorsiune cu potențiometru de intensitate al efectului
+[web3]
+ - Butonul Albastru pentru Tremolo cu potențiometru de intensitate al efectului
+[web4]
+ - Butonul Galben pentru Întârziere
+[web5]
 
