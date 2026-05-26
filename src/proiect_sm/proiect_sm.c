@@ -123,7 +123,7 @@ static inline uint16_t __not_in_flash_func(process_sample)(uint16_t sample_in) {
     
     if (current_effect == FX_TREMOLO) { 
         
-        // 1. PHASE ACCUMULATOR
+        // PHASE ACCUMULATOR
         static uint32_t lfo_phase = 0;
         
         uint32_t freq_hz = 1 + (trem_rate * 9) / 100; 
@@ -131,7 +131,7 @@ static inline uint16_t __not_in_flash_func(process_sample)(uint16_t sample_in) {
         
         lfo_phase += phase_inc; 
         
-        // 2. GENERATE HD TRIANGLE WAVE (12-bit: 0 to 4095)
+        // GENERATE HD TRIANGLE WAVE (12-bit: 0 to 4095)
         // Instead of grabbing the top 8 bits (>> 24), we grab the top 12 bits (>> 20)
         uint32_t top_12 = lfo_phase >> 20; 
         int32_t triangle = top_12;
@@ -142,17 +142,17 @@ static inline uint16_t __not_in_flash_func(process_sample)(uint16_t sample_in) {
         }
         triangle = triangle << 1; // Scale up to roughly 0 - 4095
 
-        // 3. APPLY DEPTH (12-bit math)
+        // APPLY DEPTH (12-bit math)
         // 4095 represents 100% full volume.
         int32_t lfo_mult = 4095 - (((4095 - triangle) * trem_depth) / 100);
 
-        // 4. MODULATE AMPLITUDE
+        // MODULATE AMPLITUDE
         // Multiply by our massive 12-bit LFO, then shift right by 12 (divide by 4096) 
         // to restore the audio scale.
         // Note: 4095 * 4095 = ~16.7 million, which easily fits inside our 32-bit int!
         int32_t tremolo_out = (ac_sample * lfo_mult) >> 12; 
 
-        // 5. RE-ADD DC BIAS & CLIP
+        // RE-ADD DC BIAS & CLIP
         int32_t mixed = tremolo_out + true_dc;
         
         if (mixed > 4095) mixed = 4095;
@@ -171,12 +171,12 @@ void __not_in_flash_func(dma_irq_handler)() {
     if (dma_channel_get_irq0_status(adc_dma_chan)) {
         dma_channel_acknowledge_irq0(adc_dma_chan);
 
-        // 1. IMMEDIATELY start DMA on the next buffer so we don't drop ADC samples!
+        // IMMEDIATELY start DMA on the next buffer so we don't drop ADC samples!
         int next_write_buffer = dma_write_buffer ^ 1;
         uint16_t *next = (next_write_buffer == 0) ? adc_buffer_0 : adc_buffer_1;
         dma_channel_set_write_addr(adc_dma_chan, next, true);
 
-        // 2. Process the buffer that just finished filling
+        // Process the buffer that just finished filling
         uint16_t *src = (dma_write_buffer == 0) ? adc_buffer_0 : adc_buffer_1;
         uint16_t *dst = (dma_write_buffer == 0) ? out_buffer_0 : out_buffer_1;
 
@@ -184,10 +184,10 @@ void __not_in_flash_func(dma_irq_handler)() {
             dst[i] = process_sample(src[i]);
         }
 
-        // 3. Hand the processed buffer over to the PWM playback timer
+        // Hand the processed buffer over to the PWM playback timer
         play_buffer = dma_write_buffer;
         
-        // 4. Update state for the next cycle
+        // Update state for the next cycle
         dma_write_buffer = next_write_buffer;
     }
 }
@@ -324,33 +324,42 @@ static err_t http_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_
         else if (strstr(request, "GET /?param=")) {
             char param_name[32];
             int val = 0;
-            // extract the knob name and value
+            
+            // Extragem numele parametrului și valoarea
             if (sscanf(request, "GET /?param=%31[^&]&val=%d", param_name, &val) == 2) {
+                
+                // DISTORTION
                 if (strcmp(param_name, "Distorsion") == 0) {
                     if (val == 0) val = 1;
 
-                    // default dist_gain is 25
-                    dist_gain = (val * 50) / 100 + 1; // 0-100 = clean-to-insane gain range of 1 to 50.
-                    dist_clip = 2000 - ((val * 1400) / 100); // 0-100 => 100 = clipping at 600, 0 = 2000
+                    dist_gain = (val * 50) / 100 + 1; 
+                    dist_clip = 2000 - ((val * 1400) / 100); 
                     
                     printf("[WEB] Distortion updated: Gain=%d, Clip=%d\n", dist_gain, dist_clip);
                 } 
-                else if (strcmp(param_name, "Delay") == 0) {
-                    // if (val == 0) {
-                    //     delay_depth = 0;
-                    // } else {
-                    //     delay_depth = 1000 + ((val * (DELAY_MAX - 1500)) / 100); // 1-100 = 1000 - 24500 sample delay window
-                    // }
-                    // printf("[WEB] Delay Time updated: Depth=%d samples\n", delay_depth);
-                }
-                else if (strcmp(param_name, "Reverb") == 0) {
-                    // Keep the value within safe 0-100 limits just in case
+                
+                // DELAY (NOT WORKING)
+                // else if (strcmp(param_name, "Delay") == 0) {
+                //     if (val < 0) val = 0;
+                //     if (val > 100) val = 100;
+
+                //     if (val == 0) {
+                //         delay_depth = 1; 
+                //     } else {
+                //         delay_depth = 1000 + ((val * (DELAY_MAX - 1000)) / 100); 
+                //     }
+                //     printf("[WEB] Delay Time updated: Depth=%d samples\n", delay_depth);
+                // }
+                
+                // TREMOLO RATE
+                else if (strcmp(param_name, "TremoloRate") == 0 || strcmp(param_name, "Reverb") == 0) {
                     if (val < 0) val = 0;
                     if (val > 100) val = 100;
             
                     trem_rate = val; 
                     printf("[WEB] Tremolo Rate updated: %d%%\n", trem_rate);
                 }
+
                 printf("Knob Update -> %s: %d\n", param_name, val);
             }
             
@@ -486,7 +495,7 @@ int main() {
     sleep_ms(2000);
     printf("Bass Pedal Starting...\n");
 
-    // --- NEW WI-FI INITIALIZATION ---
+    // NEW WI-FI INITIALIZATION
     if (cyw43_arch_init()) {
         printf("Wi-Fi Init Failed!\n");
     } else {
