@@ -1,88 +1,93 @@
-# Pedală Bass Titicaca
+﻿# Pedală Bass Titicaca
 
-
-
-
-#### Membrii echipei:
-
-
-
+## Echipa și Obiective
+### Membrii echipei:
 * Ciurilă Maria-Adriana
 * Frandeș Eugen-Codrin
 * Pănescu Andrei
 
+### Obiectivele proiectului:
+Obiectivul principal este realizarea unui sistem digital de procesare a semnalului audio în timp real, implementat pe platforma Raspberry Pi Pico 2 WH. Dispozitivul va capta semnalul analogic emis de o chitară bass, aplică algoritmi DSP selectați de utilizator (Distortion, Reverb, Delay) și transmite sunetul procesat în timp util către un amplificator audio, având posibilitatea de monitorizare și control printr-o interfață web integrată.
 
-
-
-
-
-#### Obiectivele proiectului:
-
-
-
-Obiectivul principal este realizarea unui sistem digital de procesare a semnalului audio în timp real, implementat pe platforma Raspberry Pi Pico 2 WH. Dispozitivul va capta semnalul audio emis de bass, va aplica unul dintre algoritmii disponibili (Distorsion, Reverb, Delay) și va transmite sunetul procesat către amplificator.
-
-
-
-
-
-#### Componente Hardware:
-
-
-
+### Componente Hardware:
 * *Microcontroler*: Raspberry Pi Pico 2 WH;
-* *Intrare/Ieșire Audio*: **DAC** MCP4725 (12-bit Resolution, I2C Interface), **ADC**-ul intern al plăcuței;
-* *Comenzi Fizice*: Toggle Switch pentru Power On/Off, Buton Ninigi PS10B2BK pentru Activare/Dezactivare efect;
+* *Intrare/Ieșire Audio*: **ADC**-ul intern al plăcuței;
+* *Comenzi Fizice*: Toggle Switch pentru Power On/Off;
 * *Indicatori (LED)*: **Alb** indică Power Status-ul, **Roșu** indică Distortion activ, **Albastru** indică Reverb activ, **Galben** indică Delay activ;
-* *Conectivitate*: 2x **Jack 6.35mm (1/4")** pentru input-ul de la bass output-ul către amplificator, **portul Micro-USB** (5V) pentru alimentare, Wi-Fi integrat pentru comunicarea cu interfața web.
+* *Conectivitate*: 2x **Jack 6.35mm (1/4")** pentru input-ul de la bass output-ul către amplificator, **portul Micro-USB** (5V) pentru alimentare, **Wi-Fi** integrat pentru comunicarea cu interfața web.
 
+## Cerințe Funcționale și Non-Funcționale
+### Cerințe Funcționale:
+*CF1. Procesare Audio Continuă* - Sistemul preia semnalul analogic prin mufa Jack Input, îl procesează în timp real și îl retransmite prin mufa Jack Output.
+*CF2. Semnalizare Vizuală* - Sistemul dispune de un ansamblu de 4 LED-uri pentru indicarea stării curente:
+- **LED Alb:** Efect activat pe modul **Clean** (semnal de bază, fără procesare acustică adițională).
+- **LED Roșu:** Efect **Distortion** activat.
+- **LED Albastru:** Efect **Reverb** activat.
+- **LED Galben:** Efect **Delay** activat.
 
+*CF3. Interfață Web* - Modificarea algoritmului de efect activat (Distortion / Reverb / Delay) se realizează exclusiv utilizând interfața grafică Web UI.
+*CF4. Sincronizare Vizuală HW-SW* - Orice schimbare de stare efectuată în interfața Web UI determină stingerea automată a LED-ului precedent și aprinderea LED-ului corespunzător noii selecții pe hardware-ul fizic.
 
+### Cerințe Non-Funcționale:
 
+*CNF1. Latență* - Întârzierea generală a procesării audio (de la ADC Input la PWM Output) nu trebuie să depășească 5-10 ms, fiind insesizabilă pentru muzician în timpul execuției live.
 
-#### Cerințe Funcționale:
+*CNF2. Fiabilitate și Prioritizare Execuție* - Serverul web și interfața Wi-Fi nu au voie să blocheze sau să întrerupă firul principal de execuție dedicat eșantionării și procesării audio.
 
+*CNF3. Eficiență Resurse* - Utilizarea perifericului hardware DMA (Direct Memory Access) pentru transferul direct de date între periferice (ADC/PWM) și memorie, minimizând încărcarea nucleelor procesorului.
 
+*CNF4. Ergonomie și UI Intuitiv* - Elementele vizuale din interfața Web UI folosesc palete de culori identice cu culorile fizice ale LED-urilor asociate (Roșu, Albastru, Galben, Alb).
 
-1. LED-ul Alb se aprinde imediat ce switch-ul este pe On.
-2. Sistemul trebuie să preia semnalul prin mufa Jack Input și să îl redea prin Jack Output după procesare.
-3. Butonul fizic activează/dezactivează efectul selectat.
-4. Schimbarea algoritmului (Distors/Reverb/Delay) se face exclusiv prin Web UI.
-5. LED-urile colorate (roșu/albastru/galben) trebuie să reflecte efectul ales în interfața web.
+*CNF5. Siguranță Electronică* - Dimensionarea rezistențelor de limitare atașate LED-urilor pentru a asigura un consum de curent situat sub pragul maxim recomandat per pin GPIO de pe RP2350.
 
+## Scenariu de Testare:
+### Verificarea Integrității Semnalului Analogic
 
-
-
-
-#### Cerințe Non-Funcționale:
-
-
-
-1. *Latență*: Întârzierea procesării audio (Input-to-Output) trebuie să fie insesizabilă de către muzician.
-2. *Fiabilitate*: Web server-ul nu trebuie să blocheze execuția thread-ului de procesare audio (audio processing priority).
-3. *Eficiență*: Utilizarea DMA (Direct Memory Access) pentru transferul datelor audio fără a bloca nucleele procesorului.
-4. *UI Intuitiv*: Interfața web trebuie să aibă culori care să corespundă LED-urilor fizice.
-5. *Consum Energie*: LED-urile trebuie configurate cu rezistențe adecvate pentru a nu depăși curentul maxim per pin GPIO al Pico 2.
-
-
-
-
-
-#### Scenariu de Testare:
-
-
-
-###### Verificarea Integrității Semnalului Analogic
-
-Obiectiv: Verificarea conexiunilor fizice (Jack) și a alimentării USB.
-
-
+##### Obiectiv: Validarea fluxului audio complet, funcționarea corectă a modului _Clean_ și sincronizarea vizuală la trimiterea cererilor de la distanță.
 
 |**Pas**|**Acțiune Utilizator**|**Rezultat Așteptat**|
 |-|-|-|
-|1|Conectare cabluri|Se conectează bass-ul la mufa de intrare și un amplificator la cea de ieșire. Se introduce cablul Micro-USB.|
-|2|Verificare LED Alb|LED Alb aprins, sunetul trece prin pedală în mod "Bypass" fără distorsiuni majore sau brum excesiv.|
-|3|Activare efect din Web UI|Depinzând de efectul ales, LED-ul respectiv se aprinde, sunetul este procesat (amplificatorul redă sunetul cu efect)|
+|1|Se conectează bass-ul la mufa de intrare și un amplificator la cea de ieșire. Se introduce cablul Micro-USB și se pornește Toggle Switch-ul.|Sistemul pornește corect. LED-ul Alb se aprinde indicând modul inițial "Clean". Semnalul audio nativ se aude în amplificator clar, fără distorsiuni majore sau zgomot de fond indus.|
+|2|Utilizatorul se conectează la rețeaua Wi-Fi a pedalei și accesează adresa IP a serverului web în browser.|Interfața Web UI se încarcă complet, indicând vizual corelația cu modul curent.|
+|3|Se selectează efectul „Distortion” din interfața Web UI.|LED-ul Alb se stinge instantaneu, LED-ul Roșu se aprinde, iar semnalul din amplificator capătă caracteristicile acustice de distors/saturație.|
 
+## Diagramă de Componente / Schemă Bloc
+## Parametrii Relevanți ai Componentelor și Integrarea Lor
 
+Integrarea componentelor în arhitectura propusă se bazează pe potrivirea parametrilor electrici și dinamici dintre etajele analogice și cele digitale ale microcontrolerului RP2350.
+
+### Rata de Eșantionare și Rezoluția ADC-ului:
+*Parametri* - Rezoluție de 12 biți (valori între 0 și 4095), rată de eșantionare fixată la 50 kHz.
+
+*Argumentare* - Conform teoremei Nyquist-Shannon, pentru a reproduce un semnal audio de bass cu o bandă utilă de până la 20kH este necesară o frecvență de eșantionare de cel puțin dublul acestei valori. Alegerea valorii de 50 kHz oferă o rezoluție temporală excelentă de 20 μs per eșantion, reducând la minimum zgomotul de cuantizare.
+
+### Configurația Modulului PWM ca DAC:
+*Parametri* - Frecvență de ceas a sistemului de $150MHz, valoare de "wrap" setată optim pentru a asigura o frecvență a purtătoarei PWM mult peste banda audio (de ordinul sutelor de kiloherți).
+
+*Argumentare* - Renunțarea la un DAC extern pe I2C (cum era inițial MCP4725) reprezintă o optimizare critică. Transmisia I2C la 400 kHz sau 1 MHz introducea blocaje și timpi mari de așteptare. Generarea semnalului prin modulul PWM intern controlat direct prin regiștri hardware permite scrierea asincronă instantanee, scăzând latența audio de procesare la valori apropiate de zero.
+
+### Circuitul de Adaptare a Semnalului de Intrare:
+*Parametri* - Circuit divizor rezistiv cu condensator de decuplare pentru a crea o tensiune de polarizare (bias) la 1.65 V.
+
+*Argumentare* - Deoarece semnalul audio alternativ de la instrument are oscilații negative și pozitive, iar ADC-ul intern al plăcuței Pico 2 acceptă doar intrări în domeniul [0 V, 3.3 V], adăugarea componentei de DC (offset) la mijlocul intervalului (1.65 V) elimină riscul de tăiere (clipping) a semnalului.
+
+#### Referințe Documentație Tehnică:
+
+ - *RP2350 Datasheet (Raspberry Pi Ltd.)*
+ - *Hardware Design with RP2350*
+ - Cursuri și Laboratoare
+
+## Schemă Electrică și Testarea HW-SW
+### Schema Electrică
+![schema electrica](https://github.tuiasi.ro/SM26/proiect_Titicaca/blob/main/schema-electrica.png)
+### Descrierea Procesului de Testare și Integrare HW-SW
+Integrarea componentelor software cu cele hardware se realizează în pași incrementali pentru a facilita depanarea:
+
+ 1. **Testare Hardware Nivel Zero:** Verificarea cu multimetrul a prezenței tensiunii de 3.3 V pe pinii Pico după acționarea switch-ului și măsurarea punctului de bias pe pinul ADC (1.65 V fără instrument conectat).
+ 2. **Integrare și Testare Driver Periferice:** Încărcarea unui cod minimalist care citește eșantionul din ADC și îl scrie direct ca factor de umplere în registrul PWM, ocolind bufferele și rețeaua. Scopul este calibrarea filtrului acustic de la ieșire și verificarea absenței distorsiunilor hardware.
+ 3. **Integrare și Validare Conectivitate Wi-Fi + Server Web:** Pornirea modulului Wi-Fi pe Core 0. Se rulează un script de test care simulează schimbări rapide ale stării din interfață pentru a garanta că rutările software aprind LED-urile fizice corecte fără a afecta stabilitatea microcontrolerului.
+
+## Scheme Bloc Software
+
+## Documentare Foto și Video
 
