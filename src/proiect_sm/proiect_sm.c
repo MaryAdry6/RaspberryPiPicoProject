@@ -46,7 +46,7 @@ typedef enum {
     FX_CLEAN,
     FX_DISTORTION,
     FX_DELAY,
-    FX_REVERB
+    FX_TREMOLO
 } EffectType;
 
 // Change this variable to switch effects (e.g., inside your main loop via buttons)
@@ -65,30 +65,20 @@ uint16_t delay_buffer[DELAY_MAX];
 volatile uint32_t delay_ptr = 0;
 volatile uint32_t delay_depth = 20000; 
 
-// REVERB PARAMS
-// Reverb uses multiple short delays (comb filters) at prime lengths 
 
-#define REV_C1 4153
-#define REV_C2 4789
-#define REV_C3 5471
-#define REV_C4 6263
-#define REV_A1 1021
-#define REV_A2 337
-
-int16_t rev_c1_buf[REV_C1];
-int16_t rev_c2_buf[REV_C2];
-int16_t rev_c3_buf[REV_C3];
-int16_t rev_c4_buf[REV_C4];
-int16_t rev_a1_buf[REV_A1];
-int16_t rev_a2_buf[REV_A2];
-
-volatile uint32_t ptr_c1 = 0, ptr_c2 = 0, ptr_c3 = 0, ptr_c4 = 0;
-volatile uint32_t ptr_a1 = 0, ptr_a2 = 0;
-
-volatile int32_t reverb_mix = 50;
+// TREMOLO PARAMS
+volatile int32_t trem_rate = 50;  // 0-100: Controls speed (approx 1Hz to 10Hz)
+volatile int32_t trem_depth = 80; // 0-100: Controls how deep the volume drop is
 
 // PROCESSING FUNCTION 
 static inline uint16_t __not_in_flash_func(process_sample)(uint16_t sample_in) {
+
+    static int32_t global_dc_filter = 2048 << 14; 
+    global_dc_filter += (sample_in - (global_dc_filter >> 14));
+    int32_t true_dc = global_dc_filter >> 14;
+    
+    int32_t ac_sample = (int32_t)sample_in - true_dc;
+
     
     if (current_effect == FX_CLEAN) {
         return sample_in;
@@ -96,34 +86,19 @@ static inline uint16_t __not_in_flash_func(process_sample)(uint16_t sample_in) {
     
     // DISTORTION
     if (current_effect == FX_DISTORTION) {
-        // Auto-Center the DC Bias 
-        static int32_t dc_filter = 2048 << 14; 
-        dc_filter += (sample_in - (dc_filter >> 14));
-        int32_t true_dc = dc_filter >> 14;
-        
-        int32_t ac_sample = (int32_t)sample_in - true_dc;
-        
-        // Input Anti-Feedback Filter
-        // Smooths out high-frequency PWM noise before it can hit the gain stage.
         static int32_t lp_in = 0;
         lp_in = (lp_in * 3 + ac_sample) >> 2; 
         
-        // Apply Fuzz Gain
         int32_t distorted = lp_in * dist_gain;
         
-        // Hard Clipping 
         if (distorted > dist_clip) distorted = dist_clip;
         if (distorted < -dist_clip) distorted = -dist_clip;
         
-        // Cabinet Simulator / Output Filter
-       
         static int32_t lp_out = 0;
         lp_out = (lp_out * 7 + distorted) >> 3; 
 
-        // Recenter to exactly 2048 for the clean PWM output
-        int32_t out_sample = 2048 + lp_out;
+        int32_t out_sample = true_dc + lp_out; // Use true_dc instead of 2048
         
-        // Safety bounds
         if (out_sample > 4095) out_sample = 4095;
         if (out_sample < 0) out_sample = 0;
         
@@ -146,71 +121,40 @@ static inline uint16_t __not_in_flash_func(process_sample)(uint16_t sample_in) {
         return (sample_in + delayed_sample) >> 1; 
     }
     
-    // REVERB
-    if (current_effect == FX_REVERB) {
-        // Strip the hardware DC bias immediately
-        int32_t ac_sample = (int32_t)sample_in - 2048;
+    if (current_effect == FX_TREMOLO) { 
         
-        // High-Pass the input for the reverb tank
-        // We separate the heavy low-end so only the mids/highs get reverberated.
-        // This acts as a leaky integrator (low-pass), which we subtract from the original signal.
-        static int32_t lp_bass = 0;         
-        lp_bass = (lp_bass * 15 + ac_sample) >> 4; 
-        int32_t rev_input = ac_sample - lp_bass; // The "shimmer" without the low-end mud
+        // 1. PHASE ACCUMULATOR
+        static uint32_t lfo_phase = 0;
         
-        // Read from the 4 Parallel Comb Filters
-        int32_t read_c1 = rev_c1_buf[ptr_c1];
-        int32_t read_c2 = rev_c2_buf[ptr_c2];
-        int32_t read_c3 = rev_c3_buf[ptr_c3];
-        int32_t read_c4 = rev_c4_buf[ptr_c4];
+        uint32_t freq_hz = 1 + (trem_rate * 9) / 100; 
+        uint32_t phase_inc = freq_hz * 85899; 
         
-        // High-Frequency Damping (Simulates air absorbing sound)
-        static int32_t damp1 = 0, damp2 = 0, damp3 = 0, damp4 = 0;
-        damp1 = (damp1 * 3 + read_c1) >> 2;
-        damp2 = (damp2 * 3 + read_c2) >> 2;
-        damp3 = (damp3 * 3 + read_c3) >> 2;
-        damp4 = (damp4 * 3 + read_c4) >> 2;
+        lfo_phase += phase_inc; 
         
-        // Write back with Feedback
-        int32_t in_scaled = rev_input >> 2;
-        rev_c1_buf[ptr_c1] = in_scaled + ((damp1 * 7) >> 3);
-        rev_c2_buf[ptr_c2] = in_scaled + ((damp2 * 7) >> 3);
-        rev_c3_buf[ptr_c3] = in_scaled + ((damp3 * 7) >> 3);
-        rev_c4_buf[ptr_c4] = in_scaled + ((damp4 * 7) >> 3);
+        // 2. GENERATE HD TRIANGLE WAVE (12-bit: 0 to 4095)
+        // Instead of grabbing the top 8 bits (>> 24), we grab the top 12 bits (>> 20)
+        uint32_t top_12 = lfo_phase >> 20; 
+        int32_t triangle = top_12;
         
-        ptr_c1 = (ptr_c1 + 1) % REV_C1;
-        ptr_c2 = (ptr_c2 + 1) % REV_C2;
-        ptr_c3 = (ptr_c3 + 1) % REV_C3;
-        ptr_c4 = (ptr_c4 + 1) % REV_C4;
-        
-        // Mix the Comb Filters down into a single signal
-        int32_t comb_out = (read_c1 + read_c2 + read_c3 + read_c4) >> 2;
-        
-        // All-Pass Filter 1
-        int32_t read_a1 = rev_a1_buf[ptr_a1];
-        int32_t new_a1 = comb_out + (read_a1 >> 1);
-        rev_a1_buf[ptr_a1] = new_a1;
-        int32_t out_a1 = read_a1 - (new_a1 >> 1);
-        ptr_a1 = (ptr_a1 + 1) % REV_A1;
-        
-        // All-Pass Filter 2
-        int32_t read_a2 = rev_a2_buf[ptr_a2];
-        int32_t new_a2 = out_a1 + (read_a2 >> 1);
-        rev_a2_buf[ptr_a2] = new_a2;
-        int32_t out_a2 = read_a2 - (new_a2 >> 1);
-        ptr_a2 = (ptr_a2 + 1) % REV_A2;
+        // Fold at the halfway point (2047 instead of 127)
+        if (triangle > 2047) {
+            triangle = 4095 - triangle; 
+        }
+        triangle = triangle << 1; // Scale up to roughly 0 - 4095
 
+        // 3. APPLY DEPTH (12-bit math)
+        // 4095 represents 100% full volume.
+        int32_t lfo_mult = 4095 - (((4095 - triangle) * trem_depth) / 100);
 
-        // Identify the pure "Wet" signal (fully reverberated environment, centered at 0 DC)
-        int32_t wet_signal = out_a2; 
+        // 4. MODULATE AMPLITUDE
+        // Multiply by our massive 12-bit LFO, then shift right by 12 (divide by 4096) 
+        // to restore the audio scale.
+        // Note: 4095 * 4095 = ~16.7 million, which easily fits inside our 32-bit int!
+        int32_t tremolo_out = (ac_sample * lfo_mult) >> 12; 
+
+        // 5. RE-ADD DC BIAS & CLIP
+        int32_t mixed = tremolo_out + true_dc;
         
-        // Blend Dry (ac_sample) and Wet (wet_signal) dynamically based on the web knob (0-100)
-        int32_t mixed = ((ac_sample * (100 - reverb_mix)) + (wet_signal * reverb_mix)) / 100;
-        
-        // Restore the hardware DC bias so the PWM reads it correctly
-        mixed += 2048; 
-        
-        // Hardware Bounds Safety Net
         if (mixed > 4095) mixed = 4095;
         if (mixed < 0)    mixed = 0;
 
@@ -227,21 +171,24 @@ void __not_in_flash_func(dma_irq_handler)() {
     if (dma_channel_get_irq0_status(adc_dma_chan)) {
         dma_channel_acknowledge_irq0(adc_dma_chan);
 
+        // 1. IMMEDIATELY start DMA on the next buffer so we don't drop ADC samples!
+        int next_write_buffer = dma_write_buffer ^ 1;
+        uint16_t *next = (next_write_buffer == 0) ? adc_buffer_0 : adc_buffer_1;
+        dma_channel_set_write_addr(adc_dma_chan, next, true);
+
+        // 2. Process the buffer that just finished filling
         uint16_t *src = (dma_write_buffer == 0) ? adc_buffer_0 : adc_buffer_1;
         uint16_t *dst = (dma_write_buffer == 0) ? out_buffer_0 : out_buffer_1;
 
-        // Process the samples in the background
         for (int i = 0; i < BUFFER_SIZE; i++) {
             dst[i] = process_sample(src[i]);
         }
 
-        // Instantly switch the playback buffer. 
-        // The timer will immediately start reading the new data on its next tick.
+        // 3. Hand the processed buffer over to the PWM playback timer
         play_buffer = dma_write_buffer;
-
-        dma_write_buffer ^= 1;
-        uint16_t *next = (dma_write_buffer == 0) ? adc_buffer_0 : adc_buffer_1;
-        dma_channel_set_write_addr(adc_dma_chan, next, true);
+        
+        // 4. Update state for the next cycle
+        dma_write_buffer = next_write_buffer;
     }
 }
 
@@ -329,7 +276,7 @@ void update_leds() {
     gpio_put(LED_WHITE,      current_effect == FX_CLEAN);
     gpio_put(LED_RED, current_effect == FX_DISTORTION);
     gpio_put(LED_YELLOW,      current_effect == FX_DELAY);
-    gpio_put(LED_BLUE,     current_effect == FX_REVERB);
+    gpio_put(LED_BLUE,     current_effect == FX_TREMOLO);
 }
 
 void leds_init() {
@@ -365,7 +312,7 @@ static err_t http_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_
             if (strstr(request, "fx=clean"))  current_effect = FX_CLEAN;
             if (strstr(request, "fx=dist"))   current_effect = FX_DISTORTION;
             if (strstr(request, "fx=delay"))  current_effect = FX_DELAY;
-            if (strstr(request, "fx=reverb")) current_effect = FX_REVERB;
+            if (strstr(request, "fx=reverb")) current_effect = FX_TREMOLO;
 
             update_leds();
             
@@ -397,9 +344,12 @@ static err_t http_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_
                     // printf("[WEB] Delay Time updated: Depth=%d samples\n", delay_depth);
                 }
                 else if (strcmp(param_name, "Reverb") == 0) {
-                    // reverb_mix = val; 
-                    
-                    // printf("[WEB] Reverb Mix updated: %d%%\n", reverb_mix);
+                    // Keep the value within safe 0-100 limits just in case
+                    if (val < 0) val = 0;
+                    if (val > 100) val = 100;
+            
+                    trem_rate = val; 
+                    printf("[WEB] Tremolo Rate updated: %d%%\n", trem_rate);
                 }
                 printf("Knob Update -> %s: %d\n", param_name, val);
             }
