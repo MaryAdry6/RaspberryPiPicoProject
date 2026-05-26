@@ -109,6 +109,7 @@ să modifice setarea *"IP Assignment"* din automatic în **Manual**
 <img width="582" height="255" alt="wifi4" src="https://github.tuiasi.ro/user-attachments/assets/df00b881-0a6a-4d7a-bc3f-01c21dbbf81a" />
 
 și să completeze adresele cerute astfel:
+
 <img width="579" height="862" alt="wifi5" src="https://github.tuiasi.ro/user-attachments/assets/7907d5e5-aff2-4a66-ac21-640cb96cbb8c" />
 
 #### NU UITAȚI SĂ APĂSAȚI BUTONUL DE SAVE!
