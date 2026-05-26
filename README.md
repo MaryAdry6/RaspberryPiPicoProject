@@ -79,7 +79,8 @@ Integrarea componentelor în arhitectura propusă se bazează pe potrivirea para
 
 ## Schemă Electrică și Testarea HW-SW
 ### Schema Electrică
-![schema electrica](https://github.tuiasi.ro/SM26/proiect_Titicaca/blob/main/schema-electrica.png)
+<img width="2480" height="3508" alt="schema electrica" src="https://github.tuiasi.ro/user-attachments/assets/bd9bf50b-e9c7-41fa-a40f-b2b7997b148a" />
+
 ### Descrierea Procesului de Testare și Integrare HW-SW
 Integrarea componentelor software cu cele hardware se realizează în pași incrementali pentru a facilita depanarea:
 
@@ -90,4 +91,5 @@ Integrarea componentelor software cu cele hardware se realizează în pași incr
 ## Scheme Bloc Software
 
 ## Documentare Foto și Video
+![foto1](https://github.tuiasi.ro/user-attachments/assets/92049fac-a6dd-4732-88c5-68823867a30a)
 
