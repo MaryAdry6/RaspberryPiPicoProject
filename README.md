@@ -7,13 +7,13 @@
 * Pănescu Andrei
 
 ### Obiectivele proiectului:
-Obiectivul principal este realizarea unui sistem digital de procesare a semnalului audio în timp real, implementat pe platforma Raspberry Pi Pico 2 WH. Dispozitivul va capta semnalul analogic emis de o chitară bass, aplică algoritmi DSP selectați de utilizator (Distortion, Reverb, Delay) și transmite sunetul procesat în timp util către un amplificator audio, având posibilitatea de monitorizare și control printr-o interfață web integrată.
+Obiectivul principal este realizarea unui sistem digital de procesare a semnalului audio în timp real, implementat pe platforma Raspberry Pi Pico 2 WH. Dispozitivul va capta semnalul analogic emis de o chitară bass, aplică algoritmi DSP selectați de utilizator (Distortion,Tremolo, Delay) și transmite sunetul procesat în timp util către un amplificator audio, având posibilitatea de monitorizare și control printr-o interfață web integrată.
 
 ### Componente Hardware:
 * *Microcontroler*: Raspberry Pi Pico 2 WH;
 * *Intrare/Ieșire Audio*: **ADC**-ul intern al plăcuței;
 * *Comenzi Fizice*: Toggle Switch pentru Power On/Off;
-* *Indicatori (LED)*: **Alb** indică Power Status-ul, **Roșu** indică Distortion activ, **Albastru** indică Reverb activ, **Galben** indică Delay activ;
+* *Indicatori (LED)*: **Alb** indică Power Status-ul, **Roșu** indică Distortion activ, **Albastru** indică Tremolo activ, **Galben** indică Delay activ;
 * *Conectivitate*: 2x **Jack 6.35mm (1/4")** pentru input-ul de la bass output-ul către amplificator, **portul Micro-USB** (5V) pentru alimentare, **Wi-Fi** integrat pentru comunicarea cu interfața web.
 
 ## Cerințe Funcționale și Non-Funcționale
@@ -25,7 +25,7 @@ Obiectivul principal este realizarea unui sistem digital de procesare a semnalul
 - **LED Albastru:** Efect **Reverb** activat.
 - **LED Galben:** Efect **Delay** activat.
 
-*CF3. Interfață Web* - Modificarea algoritmului de efect activat (Distortion / Reverb / Delay) se realizează exclusiv utilizând interfața grafică Web UI.
+*CF3. Interfață Web* - Modificarea algoritmului de efect activat (Distortion / Tremolo / Delay) se realizează exclusiv utilizând interfața grafică Web UI.
 *CF4. Sincronizare Vizuală HW-SW* - Orice schimbare de stare efectuată în interfața Web UI determină stingerea automată a LED-ului precedent și aprinderea LED-ului corespunzător noii selecții pe hardware-ul fizic.
 
 ### Cerințe Non-Funcționale:
