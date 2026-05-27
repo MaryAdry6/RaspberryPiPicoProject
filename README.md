@@ -22,7 +22,7 @@ Obiectivul principal este realizarea unui sistem digital de procesare a semnalul
 *CF2. Semnalizare Vizuală* - Sistemul dispune de un ansamblu de 4 LED-uri pentru indicarea stării curente:
 - **LED Alb:** Efect activat pe modul **Clean** (semnal de bază, fără procesare acustică adițională).
 - **LED Roșu:** Efect **Distortion** activat.
-- **LED Albastru:** Efect **Reverb** activat.
+- **LED Albastru:** Efect **Tremolo** activat.
 - **LED Galben:** Efect **Delay** activat.
 
 *CF3. Interfață Web* - Modificarea algoritmului de efect activat (Distortion / Tremolo / Delay) se realizează exclusiv utilizând interfața grafică Web UI.
