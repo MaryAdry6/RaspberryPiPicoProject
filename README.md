@@ -20,6 +20,7 @@
     - Finisarea Efectelor
     - Diagrama de Componente
     - Schema Bloc Software
+    - Integrare logica multicore
 
 ### Obiectivele proiectului:
 Obiectivul principal este realizarea unui sistem digital de procesare a semnalului audio în timp real, implementat pe platforma Raspberry Pi Pico 2 WH. Dispozitivul va capta semnalul analogic emis de o chitară bass, aplică algoritmi DSP selectați de utilizator (Distortion,Tremolo, Delay) și transmite sunetul procesat în timp util către un amplificator audio, având posibilitatea de monitorizare și control printr-o interfață web integrată.
