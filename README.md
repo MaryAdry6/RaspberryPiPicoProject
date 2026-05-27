@@ -80,7 +80,7 @@ Integrarea componentelor în arhitectura propusă se bazează pe potrivirea para
 *Argumentare* - Conform teoremei Nyquist-Shannon, pentru a reproduce un semnal audio de bass cu o bandă utilă de până la 20kH este necesară o frecvență de eșantionare de cel puțin dublul acestei valori. Alegerea valorii de 50 kHz oferă o rezoluție temporală excelentă de 20 μs per eșantion, reducând la minimum zgomotul de cuantizare.
 
 ### Configurația Modulului PWM ca DAC:
-*Parametri* - Frecvență de ceas a sistemului de $150MHz, valoare de "wrap" setată optim pentru a asigura o frecvență a purtătoarei PWM mult peste banda audio (de ordinul sutelor de kiloherți).
+*Parametri* - Frecvență de ceas a sistemului de 150 MHz, valoare de "wrap" setată optim pentru a asigura o frecvență a purtătoarei PWM mult peste banda audio (de ordinul sutelor de kiloherți).
 
 *Argumentare* - Renunțarea la un DAC extern pe I2C (cum era inițial MCP4725) reprezintă o optimizare critică. Transmisia I2C la 400 kHz sau 1 MHz introducea blocaje și timpi mari de așteptare. Generarea semnalului prin modulul PWM intern controlat direct prin regiștri hardware permite scrierea asincronă instantanee, scăzând latența audio de procesare la valori apropiate de zero.
 
