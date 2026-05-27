@@ -3,8 +3,23 @@
 ## Echipa și Obiective
 ### Membrii echipei:
 * Ciurilă Maria-Adriana
+ * Interfața Web
+ * Implementare DMA
+ * Legare hardware de interfață
+ * Implementare LED-uri
+ * Funcționalitate Knob Distorsion
+ * Documentație
 * Frandeș Eugen-Codrin
+ * Schema Electrică
+ * Baza Efectelor
+ * Implementare Wi-Fi
+ * Funcționalitate Knob Tremolo
 * Pănescu Andrei
+ * Knob-uri din interfața web
+ * Implementare Wi-Fi
+ * Finisarea Efectelor
+ * Diagrama de Componente
+ * Schema Bloc Software
 
 ### Obiectivele proiectului:
 Obiectivul principal este realizarea unui sistem digital de procesare a semnalului audio în timp real, implementat pe platforma Raspberry Pi Pico 2 WH. Dispozitivul va capta semnalul analogic emis de o chitară bass, aplică algoritmi DSP selectați de utilizator (Distortion,Tremolo, Delay) și transmite sunetul procesat în timp util către un amplificator audio, având posibilitatea de monitorizare și control printr-o interfață web integrată.
@@ -151,5 +166,3 @@ La secțiunea *"Control"* sunt butoanele de activare a efectelor:
 ![web4](https://github.tuiasi.ro/user-attachments/assets/89b86446-4c78-4fc8-a09e-a25ac5bd4055)
  - Butonul Galben pentru Întârziere
 ![web5](https://github.tuiasi.ro/user-attachments/assets/99af39f1-12e5-49b1-82c8-90901502c480)
-
-
