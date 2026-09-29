@@ -1,4 +1,5 @@
 ﻿# Pedală Bass Titicaca
+This project is a real-time digital audio effects pedal for bass guitar, built on the Raspberry Pi Pico 2 WH and developed as a university project for the Microprocessor Systems course, featuring Distortion, Tremolo and Delay effects controlled through a Wi-Fi web interface.
 
 ## Echipa și Obiective
 ### Membrii echipei:
